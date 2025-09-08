@@ -37,6 +37,7 @@ from .page.schema import PageMutations, PageQueries
 from .payment.schema import PAYMENT_ADDITIONAL_TYPES, PaymentMutations, PaymentQueries
 from .plugins.schema import PluginsMutations, PluginsQueries
 from .product.schema import ProductMutations, ProductQueries
+from .product.types.trie_search import add_trie_search_to_query
 from .shipping.schema import ShippingMutations, ShippingQueries
 from .shop.schema import ShopMutations, ShopQueries
 from .tax.schema import TaxMutations, TaxQueries
@@ -78,6 +79,10 @@ class Query(
     WebhookQueries,
 ):
     pass
+
+
+# Add Trie search functionality to the Query class
+add_trie_search_to_query(Query)
 
 
 class Mutation(

@@ -16,3 +16,7 @@ class ProductTypeKind:
         (NORMAL, "A standard product type."),
         (GIFT_CARD, "A gift card product type."),
     ]
+
+
+# Import signals to ensure they are registered
+from . import signals  # noqa
