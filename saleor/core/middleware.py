@@ -3,6 +3,7 @@ import logging
 from typing import TYPE_CHECKING, Union
 
 from django.conf import settings
+from django.http import HttpResponse
 
 from .jwt import JWT_REFRESH_TOKEN_COOKIE_NAME, jwt_decode_with_exception_handler
 
@@ -42,3 +43,28 @@ def jwt_refresh_token_middleware(get_response):
         return response
 
     return middleware
+
+
+class CorsMiddleware:
+    """Simple CORS middleware to allow frontend requests during development."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Handle preflight requests
+        if request.method == "OPTIONS":
+            response = HttpResponse()
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+            response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            response["Access-Control-Max-Age"] = "3600"
+            return response
+
+        # Handle actual requests
+        response = self.get_response(request)
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        
+        return response

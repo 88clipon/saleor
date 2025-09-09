@@ -8,6 +8,7 @@ from typing import List, Optional
 
 from ...core.connection import CountableConnection
 from ...core.doc_category import DOC_CATEGORY_PRODUCTS
+from ...core.fields import JSONString
 from ...core.types import BaseObjectType
 from ....product.trie_search import get_trie_search, SearchResult
 
@@ -19,7 +20,7 @@ class TrieSearchResult(BaseObjectType):
     text = graphene.String(required=True, description="The text that matched the search.")
     type = graphene.String(required=True, description="The type of result (product, variant, sku, etc.).")
     score = graphene.Float(description="The relevance score of the result.")
-    metadata = graphene.JSONString(description="Additional metadata about the result.")
+    metadata = JSONString(description="Additional metadata about the result.")
     
     class Meta:
         doc_category = DOC_CATEGORY_PRODUCTS
@@ -112,7 +113,7 @@ def add_trie_search_to_query(query_class):
     
     # Add the stats field
     query_class.trie_search_stats = graphene.Field(
-        graphene.JSONString,
+        JSONString,
         description="Get statistics about the Trie search index."
     )
     

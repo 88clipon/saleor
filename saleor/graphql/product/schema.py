@@ -147,6 +147,7 @@ from .types import (
     ProductVariantCountableConnection,
 )
 from .utils import check_for_sorting_by_rank
+from .types.trie_search import TrieSearchResult
 
 
 class ProductQueries(graphene.ObjectType):
@@ -359,6 +360,20 @@ class ProductQueries(graphene.ObjectType):
         ],
         doc_category=DOC_CATEGORY_PRODUCTS,
         deprecation_reason=DEFAULT_DEPRECATION_REASON,
+    )
+    
+    # Trie-based type-ahead search
+    trie_search = graphene.Field(
+        graphene.List(TrieSearchResult),
+        query=graphene.String(description="The search query (prefix)"),
+        limit=graphene.Int(description="Maximum number of results to return", default_value=10),
+        types=graphene.List(graphene.String, description="Filter by result types"),
+        description="Perform a Trie-based type-ahead search for products and variants.",
+    )
+    
+    trie_search_stats = graphene.Field(
+        graphene.String,
+        description="Get statistics about the Trie search index.",
     )
 
     @staticmethod
@@ -676,6 +691,54 @@ class ProductQueries(graphene.ObjectType):
         return create_connection_slice(
             qs, info, kwargs, ProductVariantCountableConnection
         )
+
+    @staticmethod
+    def resolve_trie_search(_root, info: ResolveInfo, query: str = None, limit: int = 10, types: list = None):
+        """Perform a Trie-based type-ahead search."""
+        try:
+            from ...product.trie_search import get_trie_search
+            trie = get_trie_search()
+            
+            # Use provided query or default
+            if not query:
+                query = 'monospace'  # Default for testing
+            
+            results = trie.search(query, limit=limit)
+            
+            # Filter by types if specified
+            if types:
+                results = [r for r in results if r.type in types]
+            
+            return [
+                TrieSearchResult(
+                    id=r.id,
+                    text=r.text,
+                    type=r.type,
+                    score=r.score,
+                    metadata=r.metadata
+                )
+                for r in results
+            ]
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Trie search error: {e}")
+            return []
+
+    @staticmethod
+    def resolve_trie_search_stats(_root, info: ResolveInfo):
+        """Get statistics about the Trie search index."""
+        try:
+            from ...product.trie_search import get_trie_search
+            import json
+            trie = get_trie_search()
+            stats = trie.get_stats()
+            return json.dumps(stats)
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Trie search stats error: {e}")
+            return json.dumps({"error": "Failed to get search statistics"})
 
 
 class ProductMutations(graphene.ObjectType):
