@@ -539,23 +539,15 @@ class TrieSearch:
                     type='product',
                     metadata={
                         'slug': product.slug,
-                        'product_type': product.product_type.name if product.product_type else None
+                        'product_type': product.product_type.name if product.product_type else None,
+                        'product_id': str(product.id),
+                        'name': product.name
                     }
                 )
                 self.insert(product.name, result)
             
-            # Index product slug
-            if product.slug:
-                result = SearchResult(
-                    id=str(product.id),
-                    text=product.slug,
-                    type='product_slug',
-                    metadata={
-                        'name': product.name,
-                        'product_type': product.product_type.name if product.product_type else None
-                    }
-                )
-                self.insert(product.slug, result)
+            # Note: Removed product slug indexing as requested
+            # Product slugs are internal URLs and shouldn't appear in search results
     
     def _index_variants(self) -> None:
         """Index all product variants in the database."""

@@ -368,7 +368,8 @@ class ProductQueries(graphene.ObjectType):
         query=graphene.String(description="The search query (prefix)"),
         limit=graphene.Int(description="Maximum number of results to return", default_value=10),
         types=graphene.List(graphene.String, description="Filter by result types"),
-        description="Perform a Trie-based type-ahead search for products and variants.",
+        substring_search=graphene.Boolean(description="Enable substring matching for keyword search", default_value=True),
+        description="Perform a Trie-based type-ahead search with optional substring matching.",
     )
     
     trie_search_stats = graphene.Field(
@@ -693,17 +694,17 @@ class ProductQueries(graphene.ObjectType):
         )
 
     @staticmethod
-    def resolve_trie_search(_root, info: ResolveInfo, query: str = None, limit: int = 10, types: list = None):
-        """Perform a Trie-based type-ahead search."""
+    def resolve_trie_search(_root, info: ResolveInfo, query: str = None, limit: int = 10, types: list = None, substring_search: bool = True):
+        """Perform a Trie-based type-ahead search with optional substring matching."""
         try:
             from ...product.trie_search import get_trie_search
             trie = get_trie_search()
             
             # Use provided query or default
             if not query:
-                query = 'monospace'  # Default for testing
+                query = 'tee'  # Default for testing
             
-            results = trie.search(query, limit=limit)
+            results = trie.search(query, limit=limit, substring_search=substring_search)
             
             # Filter by types if specified
             if types:
