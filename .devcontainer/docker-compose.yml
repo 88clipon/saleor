@@ -3,6 +3,8 @@ version: "3.4"
 services:
   saleor:
     image: saleor
+    ports:
+      - 8000:8000
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
@@ -10,11 +12,15 @@ services:
     env_file:
       - common.env
       - backend.env
+    environment:
+      - DASHBOARD_URL=http://localhost:9000/
+      - ALLOWED_HOSTS=localhost,api
     depends_on:
       - db
       - redis
     volumes:
       - ..:/app
+      # - ../media:/app/media/
 
   dashboard:
     image: ghcr.io/saleor/saleor-dashboard:3.20.5
