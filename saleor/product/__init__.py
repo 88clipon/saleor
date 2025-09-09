@@ -19,4 +19,5 @@ class ProductTypeKind:
 
 
 # Import signals to ensure they are registered
-from . import signals  # noqa
+# Note: Signals are imported in apps.py to avoid AppRegistryNotReady error
+# from . import signals  # noqa

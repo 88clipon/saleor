@@ -14,7 +14,7 @@ services:
       - backend.env
     environment:
       - DASHBOARD_URL=http://localhost:9000/
-      - ALLOWED_HOSTS=localhost,api
+      - ALLOWED_HOSTS=localhost,api,vm
     depends_on:
       - db
       - redis

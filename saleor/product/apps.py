@@ -6,31 +6,33 @@ class ProductAppConfig(AppConfig):
     name = "saleor.product"
 
     def ready(self):
-        from .models import Category, Collection, DigitalContent, ProductMedia
+        from .models import Product, ProductVariant
         from .signals import (
-            delete_background_image,
-            delete_digital_content_file,
-            delete_product_media_image,
+            update_product_trie_index,
+            remove_product_from_trie_index,
+            update_variant_trie_index,
+            remove_variant_from_trie_index,
         )
+        from django.db.models.signals import post_save, post_delete
 
-        # preventing duplicate signals
-        post_delete.connect(
-            delete_background_image,
-            sender=Category,
-            dispatch_uid="delete_category_background",
+        # Connect trie search signals
+        post_save.connect(
+            update_product_trie_index,
+            sender=Product,
+            dispatch_uid="update_product_trie_index",
         )
         post_delete.connect(
-            delete_background_image,
-            sender=Collection,
-            dispatch_uid="delete_collection_background",
+            remove_product_from_trie_index,
+            sender=Product,
+            dispatch_uid="remove_product_from_trie_index",
+        )
+        post_save.connect(
+            update_variant_trie_index,
+            sender=ProductVariant,
+            dispatch_uid="update_variant_trie_index",
         )
         post_delete.connect(
-            delete_product_media_image,
-            sender=ProductMedia,
-            dispatch_uid="delete_product_media_image",
-        )
-        post_delete.connect(
-            delete_digital_content_file,
-            sender=DigitalContent,
-            dispatch_uid="delete_digital_content_file",
+            remove_variant_from_trie_index,
+            sender=ProductVariant,
+            dispatch_uid="remove_variant_from_trie_index",
         )
