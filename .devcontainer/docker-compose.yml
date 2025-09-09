@@ -20,6 +20,7 @@ services:
       - redis
     volumes:
       - ..:/app
+      # - ../media:/app/media/
 
   dashboard:
     image: ghcr.io/saleor/saleor-dashboard:3.20.5
