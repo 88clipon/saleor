@@ -1,4 +1,5 @@
 import datetime
+import importlib.metadata
 import logging
 import os
 import os.path
@@ -10,7 +11,6 @@ import dj_database_url
 import dj_email_url
 import django_cache_url
 import django_stubs_ext
-import pkg_resources
 import sentry_sdk
 import sentry_sdk.utils
 from celery.schedules import crontab
@@ -453,6 +453,7 @@ LOGGING = {
     },
 }
 
+
 AUTH_USER_MODEL = "account.User"
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -863,9 +864,9 @@ BUILTIN_PLUGINS = [
 
 # Plugin discovery
 EXTERNAL_PLUGINS = []
-installed_plugins = pkg_resources.iter_entry_points("saleor.plugins")
+installed_plugins = importlib.metadata.entry_points(group="saleor.plugins")
 for entry_point in installed_plugins:
-    plugin_path = f"{entry_point.module_name}.{entry_point.attrs[0]}"
+    plugin_path = f"{entry_point.module}.{entry_point.attr}"
     if plugin_path not in BUILTIN_PLUGINS and plugin_path not in EXTERNAL_PLUGINS:
         if entry_point.name not in INSTALLED_APPS:
             INSTALLED_APPS.append(entry_point.name)
@@ -1076,6 +1077,10 @@ TELEMETRY_METER_CLASS = "saleor.core.telemetry.metric.Meter"
 # Whether to raise or log exceptions for telemetry unit conversion errors
 # Disabled by default to prevent disruptions caused by unexpected unit conversion issues
 TELEMETRY_RAISE_UNIT_CONVERSION_ERRORS = False
+
+# Additional hash suffix, allowing to invalidate cached schema. In production usually we want this to be empty.
+# For development envs, where schema may change often, it may be convenient to set it to e.g. commit hash value.
+GRAPHQL_CACHE_SUFFIX = os.environ.get("GRAPHQL_CACHE_SUFFIX", "")
 
 # Library `google-i18n-address` use `AddressValidationMetadata` form Google to provide address validation rules.
 # Patch `i18n` module to allows to override the default address rules.
