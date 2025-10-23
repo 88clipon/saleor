@@ -1,0 +1,104 @@
+# Product CSV Import Mutation
+#
+# This file contains the GraphQL mutation for importing products from a CSV file.
+# Use this in the GraphQL Playground or your GraphQL client.
+#
+# How to use in GraphQL Playground:
+# 1. Copy this entire mutation into the left panel
+# 2. Upload your CSV file using the multipart request functionality
+# 3. Click Execute
+#
+# How to use with curl:
+# See example at the bottom of this file
+
+mutation ImportProducts($file: Upload!) {
+  importProducts(input: { file: $file }) {
+    result {
+      success
+      importedCount
+      skippedCount
+      errorCount
+      errors {
+        row
+        slug
+        error
+      }
+    }
+    exportErrors {
+      field
+      message
+      code
+    }
+  }
+}
+
+# Example Response:
+# {
+#   "data": {
+#     "importProducts": {
+#       "result": {
+#         "success": true,
+#         "importedCount": 5,
+#         "skippedCount": 2,
+#         "errorCount": 1,
+#         "errors": [
+#           {
+#             "row": 3,
+#             "slug": "invalid-product",
+#             "error": "Invalid price value: not-a-number"
+#           }
+#         ]
+#       },
+#       "exportErrors": []
+#     }
+#   }
+# }
+
+# Using with curl (example):
+#
+# curl http://localhost:8000/graphql/ \
+#   -F operations='{"query": "mutation ImportProducts($file: Upload!) { importProducts(input: { file: $file }) { result { success importedCount skippedCount errorCount errors { row slug error } } } }", "variables": { "file": null }}' \
+#   -F map='{"0": ["variables.file"]}' \
+#   -F 0=@/home/lei/workspace/88clipon/data/sample_products_import.csv \
+#   -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+# Using with Python requests (example):
+#
+# import requests
+#
+# url = "http://localhost:8000/graphql/"
+#
+# query = '''
+# mutation ImportProducts($file: Upload!) {
+#   importProducts(input: { file: $file }) {
+#     result {
+#       success
+#       importedCount
+#       skippedCount
+#       errorCount
+#       errors {
+#         row
+#         slug
+#         error
+#       }
+#     }
+#   }
+# }
+# '''
+#
+# files = {
+#     'operations': (None, json.dumps({
+#         'query': query,
+#         'variables': {'file': None}
+#     })),
+#     'map': (None, json.dumps({'0': ['variables.file']})),
+#     '0': open('/home/lei/workspace/88clipon/data/sample_products_import.csv', 'rb')
+# }
+#
+# headers = {
+#     'Authorization': 'Bearer YOUR_TOKEN_HERE'
+# }
+#
+# response = requests.post(url, files=files, headers=headers)
+# print(response.json())
+
