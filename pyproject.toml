@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "saleor"
-version = "3.22.0-a.0"
+version = "3.23.0-a.0"
 description = "A modular, high performance, headless e-commerce platform built with Python, GraphQL, Django, and React."
 authors = [{ name = "Saleor Commerce", email = "hello@saleor.io" }]
 requires-python = ">=3.12,<3.13"
@@ -13,7 +13,7 @@ license = "BSD-3-Clause"
 dependencies = [
     "Adyen>=4.0.0,<5",
     "asgiref>=3.7.2,<4",
-    "Authlib>=1.6.0,<2",
+    "authlib>=1.6.4,<2",
     "authorizenet>=1.1.5,<2",
     "azure-common>=1.1.28,<2",
     "azure-storage-blob>=12.23.1,<13",
@@ -81,6 +81,7 @@ dependencies = [
     "opentelemetry-semantic-conventions>=0.53b1,<0.54",
     "opentelemetry-distro[otlp]>=0.53b1,<0.54",
     "celery[redis, sqs]>=4.4.5,<6.0.0",
+    "kombu[sqs]>=4.6.11,<6.0.0",
     "django-storages[google]~=1.11",
     "python-magic>=0.4.27,<0.5 ; sys_platform != 'win32'",
     "python-magic-bin>=0.4.14,<0.5 ; sys_platform == 'win32'",

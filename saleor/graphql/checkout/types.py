@@ -968,6 +968,7 @@ class Checkout(SyncWebhookControlContextModelObjectType[models.Checkout]):
             user,
             AccountPermissions.MANAGE_USERS,
             PaymentPermissions.HANDLE_PAYMENTS,
+            CheckoutPermissions.HANDLE_TAXES,
         )
         return user
 
@@ -1482,7 +1483,6 @@ class Checkout(SyncWebhookControlContextModelObjectType[models.Checkout]):
                 checkout_info=checkout_info,
                 manager=manager,
                 lines=lines,
-                address=address,
                 checkout_transactions=transactions,
                 force_status_update=True,
                 database_connection_name=database_connection_name,
@@ -1520,7 +1520,6 @@ class Checkout(SyncWebhookControlContextModelObjectType[models.Checkout]):
                 checkout_info=checkout_info,
                 manager=manager,
                 lines=lines,
-                address=address,
                 checkout_transactions=transactions,
                 force_status_update=True,
                 database_connection_name=database_connection_name,
