@@ -1,7 +1,7 @@
 import graphene
 from django.core.exceptions import ValidationError
-from django.core.files import File
 
+from .....core.exceptions import UnsupportedMediaProviderException
 from .....core.http_client import HTTPClient
 from .....core.utils.validators import get_oembed_data
 from .....permission.enums import ProductPermissions
@@ -13,7 +13,12 @@ from ....core.context import ChannelContext
 from ....core.doc_category import DOC_CATEGORY_PRODUCTS
 from ....core.mutations import BaseMutation
 from ....core.types import BaseInputObjectType, ProductError, Upload
-from ....core.validators.file import clean_image_file, is_image_url, validate_image_url
+from ....core.utils import create_file_from_response
+from ....core.validators.file import (
+    clean_image_file,
+    is_image_url,
+    is_valid_image_content_type,
+)
 from ....plugins.dataloaders import get_plugin_manager_promise
 from ...types import Product, ProductMedia
 from ...utils import ALT_CHAR_LIMIT
@@ -118,21 +123,41 @@ class ProductMediaCreate(BaseMutation):
             # In case of images, file is downloaded. Otherwise we keep only
             # URL to remote media.
             if is_image_url(media_url):
-                validate_image_url(
-                    media_url, "media_url", ProductErrorCode.INVALID.value
-                )
-                filename = get_filename_from_url(media_url)
-                image_data = HTTPClient.send_request(
+                with HTTPClient.send_request(
                     "GET", media_url, stream=True, allow_redirects=False
-                )
-                image_file = File(image_data.raw, filename)
+                ) as image_data:
+                    content_type = image_data.headers.get("content-type")
+                    if is_valid_image_content_type(content_type):
+                        filename = get_filename_from_url(media_url)
+                        image_file = create_file_from_response(image_data, filename)
+                    else:
+                        raise ValidationError(
+                            {
+                                "media_url": ValidationError(
+                                    "Invalid file type.",
+                                    code=ProductErrorCode.INVALID.value,
+                                )
+                            }
+                        )
                 media = product.media.create(
                     image=image_file,
                     alt=alt,
                     type=ProductMediaTypes.IMAGE,
                 )
             else:
-                oembed_data, media_type = get_oembed_data(media_url, "media_url")
+                try:
+                    oembed_data, media_type = get_oembed_data(
+                        media_url,
+                    )
+                except UnsupportedMediaProviderException as exc:
+                    raise ValidationError(
+                        {
+                            "media_url": ValidationError(
+                                exc.message,
+                                code=ProductErrorCode.UNSUPPORTED_MEDIA_PROVIDER.value,
+                            )
+                        }
+                    ) from exc
                 media = product.media.create(
                     external_url=oembed_data["url"],
                     alt=oembed_data.get("title", alt),

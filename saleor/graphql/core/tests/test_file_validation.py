@@ -5,14 +5,14 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
-from requests_hardened import HTTPSession
 
 from ....product.error_codes import ProductErrorCode
 from ..validators.file import (
     clean_image_file,
     is_image_mimetype,
+    is_image_url,
     is_supported_image_mimetype,
-    validate_image_url,
+    is_valid_image_content_type,
 )
 
 
@@ -60,74 +60,28 @@ def test_is_supported_image_mimetype_invalid_mimetype():
     assert not result
 
 
-def test_validate_image_url_valid_image_response(monkeypatch):
-    # given
-    valid_image_response_mock = Mock()
-    valid_image_response_mock.headers = {"content-type": "image/jpeg"}
-    monkeypatch.setattr(
-        HTTPSession,
-        "request",
-        Mock(return_value=valid_image_response_mock),
-    )
-    field = "image"
-
+@pytest.mark.parametrize(
+    ("content_type", "is_valid"),
+    [
+        ("image/jpeg", True),
+        ("image/png", True),
+        ("image/gif", True),
+        ("image/bmp", True),
+        ("image/tiff", True),
+        ("image/webp", True),
+        ("image/avif", True),
+        ("application/json", False),
+        ("text/plain", False),
+        ("application/pdf", False),
+        (None, False),
+    ],
+)
+def test_is_valid_image_content_type(content_type, is_valid):
     # when
-    dummy_url = "http://example.com/valid_url.jpg"
+    result = is_valid_image_content_type(content_type)
 
     # then
-    validate_image_url(
-        dummy_url,
-        field,
-        ProductErrorCode.INVALID.value,
-    )
-
-
-def test_validate_image_url_invalid_mimetype_response(monkeypatch):
-    # given
-    invalid_response_mock = Mock()
-    invalid_response_mock.headers = {"content-type": "application/json"}
-    monkeypatch.setattr(
-        HTTPSession,
-        "request",
-        Mock(return_value=invalid_response_mock),
-    )
-    field = "image"
-    dummy_url = "http://example.com/invalid_url.json"
-
-    # when
-    with pytest.raises(ValidationError) as exc:
-        validate_image_url(
-            dummy_url,
-            field,
-            ProductErrorCode.INVALID.value,
-        )
-
-    # then
-    assert exc.value.args[0][field].message == "Invalid file type."
-
-
-def test_validate_image_url_response_without_content_headers(monkeypatch):
-    # given
-    invalid_response_mock = Mock()
-    invalid_response_mock.headers = {}
-    monkeypatch.setattr(
-        HTTPSession,
-        "request",
-        Mock(return_value=invalid_response_mock),
-    )
-    field = "image"
-    dummy_url = "http://example.com/broken_url"
-
-    # when
-    with pytest.raises(ValidationError) as exc:
-        validate_image_url(
-            dummy_url,
-            field,
-            ProductErrorCode.INVALID.value,
-        )
-
-    # then
-    assert exc.value.args[0][field].message == "Invalid file type."
+    assert result == is_valid
 
 
 def test_clean_image_file():
@@ -314,3 +268,29 @@ def test_clean_image_file_in_avif_format():
 
     # when & then
     clean_image_file({field: img}, field, ProductErrorCode)
+
+
+@pytest.mark.parametrize(
+    ("url", "is_valid"),
+    [
+        ("http://example.com/valid_image.jpg", True),
+        ("https://example.com/valid_image.png", True),
+        ("http://example.com/valid_image.jpeg", True),
+        ("http://example.com/valid_image.gif", True),
+        ("http://example.com/valid_image.bmp", True),
+        ("http://example.com/valid_image.tiff", True),
+        ("http://example.com/valid_image.webp", True),
+        ("https://example.com/valid_image.webp", True),
+        ("http://example.com/valid_image.avif", True),
+        ("http://example.com/invalid_image.pdf", False),
+        ("http://example.com/invalid_image.docx", False),
+        ("http://example.com/invalid_image.exe", False),
+        ("http://example.com/invalid_image.txt", False),
+    ],
+)
+def test_is_image_url(url, is_valid):
+    # when
+    result = is_image_url(url)
+
+    # then
+    assert result is is_valid
