@@ -1,6 +1,7 @@
 """Utility functions for importing products from CSV files."""
 
 import csv
+import datetime
 import re
 from decimal import Decimal
 from io import StringIO
@@ -346,12 +347,23 @@ class ProductCSVImporter:
             )
 
             # Add to all channels
+            # Handle available_for_purchase - default to True (available now)
+            available_for_purchase = parse_boolean(
+                row.get("available_for_purchase", "true")
+            )
+            available_for_purchase_at = (
+                datetime.datetime.now(tz=datetime.UTC)
+                if available_for_purchase
+                else None
+            )
+
             for channel in self.all_channels:
                 ProductChannelListing.objects.create(
                     product=product,
                     channel=channel,
                     is_published=is_published,
                     visible_in_listings=is_published,
+                    available_for_purchase_at=available_for_purchase_at,
                     currency=channel.currency_code,
                 )
 

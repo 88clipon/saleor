@@ -30,6 +30,7 @@ These fields are optional but recommended:
 | `stock_quantity` | Initial stock quantity | `100` | `100` | Integer value |
 | `brand` | Brand/manufacturer name | `Ray-Ban` | Empty | Will be stored as a product attribute if provided |
 | `is_published` | Whether product is visible | `true` or `false` | `true` | Boolean value |
+| `available_for_purchase` | Whether product is available for purchase | `true` or `false` | `true` | Boolean value. When true, sets product as available for purchase immediately |
 | `track_inventory` | Enable inventory tracking | `true` or `false` | `false` | Boolean value |
 
 ## Additional Optional Fields
@@ -43,10 +44,10 @@ These fields are optional but recommended:
 ## CSV Example
 
 ```csv
-slug,name,price,description,category_slug,product_type_slug,cost_price,weight,stock_quantity,brand,is_published,track_inventory
-ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Premium clip-on sunglasses for Ray-Ban RB5121 frames,clip-on-sunglasses,sunglasses,15.50,0.05,100,Ray-Ban,true,false
-oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Sport clip-on sunglasses for Oakley frames,clip-on-sunglasses,sunglasses,18.00,0.06,75,Oakley,true,false
-generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Affordable clip-on sunglasses for round frames,clip-on-sunglasses,sunglasses,8.00,0.04,200,Generic,true,false
+slug,name,price,description,category_slug,product_type_slug,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
+ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Premium clip-on sunglasses for Ray-Ban RB5121 frames,clip-on-sunglasses,sunglasses,15.50,0.05,100,Ray-Ban,true,true,false
+oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Sport clip-on sunglasses for Oakley frames,clip-on-sunglasses,sunglasses,18.00,0.06,75,Oakley,true,true,false
+generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Affordable clip-on sunglasses for round frames,clip-on-sunglasses,sunglasses,8.00,0.04,200,Generic,true,true,false
 ```
 
 ## HTML Descriptions
