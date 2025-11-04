@@ -24,10 +24,10 @@ def test_import():
     """Test the product import functionality."""
 
     # Sample CSV content
-    csv_content = """slug,name,price,description,category_slug,product_type_slug,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
-test-product-001,Test Product 001,29.99,This is a test product for import testing.,clip-on-sunglasses,sunglasses,15.00,0.05,100,TestBrand,true,true,false
-test-product-002,Test Product 002,39.99,Another test product with different specs.,clip-on-sunglasses,sunglasses,20.00,0.06,75,TestBrand,true,true,false
-test-product-003,Test Product 003,19.99,Budget test product.,clip-on-sunglasses,sunglasses,8.00,0.04,200,Generic,true,true,false"""
+    csv_content = """slug,name,price,description,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
+test-product-001,Test Product 001,29.99,This is a test product for import testing.,15.00,0.05,100,TestBrand,true,true,false
+test-product-002,Test Product 002,39.99,Another test product with different specs.,20.00,0.06,75,TestBrand,true,true,false
+test-product-003,Test Product 003,19.99,Budget test product.,8.00,0.04,200,Generic,true,true,false"""
 
     print("=" * 60)
     print("Product CSV Import Test")

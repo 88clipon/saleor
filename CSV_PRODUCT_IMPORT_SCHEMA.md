@@ -23,8 +23,6 @@ These fields are optional but recommended:
 | Field Name | Description | Example | Default | Notes |
 |------------|-------------|---------|---------|-------|
 | `description` | Product description (plain text or HTML) | `Premium clip-on sunglasses...` or `<p>HTML content</p>` | Empty string | Supports both plain text and HTML. HTML will be automatically converted to EditorJS format for rich text display in dashboard |
-| `category_slug` | Category slug | `clip-on-sunglasses` | `clip-on-sunglasses` | Category must exist or will use default |
-| `product_type_slug` | Product type slug | `sunglasses` | `sunglasses` | Product type must exist or will use default |
 | `cost_price` | Cost/wholesale price | `15.50` | `0.00` | Numeric value in USD |
 | `weight` | Product weight | `0.05` | `0.0` | Weight in kg |
 | `stock_quantity` | Initial stock quantity | `100` | `100` | Integer value |
@@ -44,10 +42,10 @@ These fields are optional but recommended:
 ## CSV Example
 
 ```csv
-slug,name,price,description,category_slug,product_type_slug,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
-ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Premium clip-on sunglasses for Ray-Ban RB5121 frames,clip-on-sunglasses,sunglasses,15.50,0.05,100,Ray-Ban,true,true,false
-oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Sport clip-on sunglasses for Oakley frames,clip-on-sunglasses,sunglasses,18.00,0.06,75,Oakley,true,true,false
-generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Affordable clip-on sunglasses for round frames,clip-on-sunglasses,sunglasses,8.00,0.04,200,Generic,true,true,false
+slug,name,price,description,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
+ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Premium clip-on sunglasses for Ray-Ban RB5121 frames,15.50,0.05,100,Ray-Ban,true,true,false
+oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Sport clip-on sunglasses for Oakley frames,18.00,0.06,75,Oakley,true,true,false
+generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Affordable clip-on sunglasses for round frames,8.00,0.04,200,Generic,true,true,false
 ```
 
 ## HTML Descriptions
@@ -79,16 +77,16 @@ When including HTML in CSV files:
 
 **Example with quotes in HTML:**
 ```csv
-slug,name,price,description
-product-1,Product Name,29.99,"<p>Description with ""quoted"" text</p>"
+slug,name,price,description,brand
+product-1,Product Name,29.99,"<p>Description with ""quoted"" text</p>",BrandName
 ```
 
 ### Plain Text Alternative
 
 If you don't want to use HTML, you can use plain text and it will be automatically formatted:
 ```csv
-slug,name,price,description
-product-2,Simple Product,19.99,This is a simple plain text description.
+slug,name,price,description,brand
+product-2,Simple Product,19.99,This is a simple plain text description.,BrandName
 ```
 
 ## Important Notes
@@ -99,12 +97,12 @@ product-2,Simple Product,19.99,This is a simple plain text description.
 
 3. **Channel Support**: Products will be automatically added to all active channels in the system. Prices will be converted based on channel currency (USD as base, PLN = USD * 4).
 
-4. **Product Type**: If `product_type_slug` is not specified or doesn't exist, the default "Sunglasses" product type will be used with these settings:
-   - `has_variants`: false (single variant per product)
+4. **Product Type**: All products are automatically assigned to the "Clip-On Sunglasses" product type with these settings:
+   - `has_variants`: true (multiple lens color variants)
    - `is_shipping_required`: true
    - `is_digital`: false
 
-5. **Category**: If `category_slug` is not specified or doesn't exist, the default "Clip-On Sunglasses" category will be used.
+5. **Category**: All products are automatically assigned to the "Clip-On Sunglasses" category.
 
 6. **Warehouse**: Products will be added to the default warehouse. Stock quantity will be set according to the `stock_quantity` field.
 

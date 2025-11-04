@@ -301,17 +301,15 @@ class ProductCSVImporter:
         # Extract fields from row
         name = row.get("name", "").strip()
         description = row.get("description", "").strip()
-        category_slug = row.get("category_slug", "").strip()
-        product_type_slug = row.get("product_type_slug", "").strip()
         weight = parse_decimal(row.get("weight", ""), Decimal("0.0"))
         is_published = parse_boolean(row.get("is_published", "true"))
         seo_title = row.get("seo_title", "").strip()
         seo_description = row.get("seo_description", "").strip()
         external_reference = row.get("external_reference", "").strip()
 
-        # Get category and product type
-        category = self.get_category(category_slug)
-        product_type = self.get_product_type(product_type_slug)
+        # Use hardcoded category and product type
+        category = self.get_category("clip-on-sunglasses")
+        product_type = self.get_product_type("clip-on-sunglasses-product-type")
 
         with transaction.atomic():
             # Create product
