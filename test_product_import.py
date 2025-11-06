@@ -24,10 +24,10 @@ def test_import():
     """Test the product import functionality."""
 
     # Sample CSV content
-    csv_content = """slug,name,price,description,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
-test-product-001,Test Product 001,29.99,This is a test product for import testing.,15.00,0.05,100,TestBrand,true,true,false
-test-product-002,Test Product 002,39.99,Another test product with different specs.,20.00,0.06,75,TestBrand,true,true,false
-test-product-003,Test Product 003,19.99,Budget test product.,8.00,0.04,200,Generic,true,true,false"""
+    csv_content = """slug,name,price,brand,model,size,description,cost_price,weight,stock_quantity,is_published,available_for_purchase,track_inventory
+test-product-001,Test Product 001,29.99,TestBrand,TB001,52x18,This is a test product for import testing.,15.00,0.05,100,true,true,false
+test-product-002,Test Product 002,39.99,TestBrand,TB002,54x20,Another test product with different specs.,20.00,0.06,75,true,true,false
+test-product-003,Test Product 003,19.99,Generic,GEN003,50x19,Budget test product.,8.00,0.04,200,true,true,false"""
 
     print("=" * 60)
     print("Product CSV Import Test")
@@ -77,11 +77,14 @@ def test_import_with_errors():
     """Test import with intentional errors to verify error handling."""
 
     # CSV with errors
-    csv_content = """slug,name,price,description
-,Missing Slug Product,29.99,This product is missing a slug
-missing-price-product,Product Without Price,,This product has no price
-invalid-price,Product With Invalid Price,not-a-number,Invalid price format
-valid-product,Valid Test Product,49.99,This one should import successfully"""
+    csv_content = """slug,name,price,brand,model,size,description
+,Missing Slug Product,29.99,Brand1,Model1,52x18,This product is missing a slug
+missing-price-product,Product Without Price,,Brand2,Model2,52x18,This product has no price
+invalid-price,Product With Invalid Price,not-a-number,Brand3,Model3,52x18,Invalid price format
+missing-brand,Missing Brand Product,29.99,,Model4,52x18,Missing brand field
+missing-model,Missing Model Product,29.99,Brand5,,52x18,Missing model field
+missing-size,Missing Size Product,29.99,Brand6,Model6,,Missing size field
+valid-product,Valid Test Product,49.99,ValidBrand,ValidModel,52x18,This one should import successfully"""
 
     print("=" * 60)
     print("Error Handling Test")

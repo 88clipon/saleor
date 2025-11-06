@@ -240,6 +240,19 @@ class ProductCSVImporter:
         except (ValueError, TypeError):
             return False, f"Invalid price value: {price}"
 
+        # Check brand, model, and size fields (required)
+        brand = row.get("brand", "").strip()
+        if not brand:
+            return False, "Missing required field: brand"
+
+        model = row.get("model", "").strip()
+        if not model:
+            return False, "Missing required field: model"
+
+        size = row.get("size", "").strip()
+        if not size:
+            return False, "Missing required field: size"
+
         return True, None
 
     def get_category(self, category_slug: str) -> Category:
@@ -306,10 +319,15 @@ class ProductCSVImporter:
         seo_title = row.get("seo_title", "").strip()
         seo_description = row.get("seo_description", "").strip()
         external_reference = row.get("external_reference", "").strip()
+        
+        # Extract brand, model, size (required fields)
+        brand = row.get("brand", "").strip()
+        model = row.get("model", "").strip()
+        size = row.get("size", "").strip()
 
         # Use hardcoded category and product type
         category = self.get_category("clip-on-sunglasses")
-        product_type = self.get_product_type("clip-on-sunglasses-product-type")
+        product_type = self.get_product_type("clip-on-sunglasses")
 
         with transaction.atomic():
             # Create product
@@ -343,6 +361,61 @@ class ProductCSVImporter:
                 seo_description=seo_description or None,
                 external_reference=external_reference or None,
             )
+
+            # Assign product attributes (Brand, Model, Size) as plain text
+            # Get the attributes
+            brand_attr = Attribute.objects.filter(slug="eyeglass-brand").first()
+            model_attr = Attribute.objects.filter(slug="eyeglass-model").first()
+            size_attr = Attribute.objects.filter(slug="eyeglass-size").first()
+
+            if brand_attr and model_attr and size_attr:
+                from saleor.attribute.models import (
+                    AssignedProductAttributeValue,
+                    AttributeValue,
+                )
+                from django.utils.text import slugify
+
+                # For plain text attributes, create AttributeValue with plain_text field
+                # and link directly to product via AssignedProductAttributeValue
+
+                # Create/get brand value
+                brand_value, _ = AttributeValue.objects.get_or_create(
+                    attribute=brand_attr,
+                    slug=f"{product.id}_{brand_attr.id}",
+                    defaults={
+                        "name": brand[:200],  # Truncate to name field max length
+                        "plain_text": brand,
+                    },
+                )
+                AssignedProductAttributeValue.objects.create(
+                    product=product, value=brand_value
+                )
+
+                # Create/get model value
+                model_value, _ = AttributeValue.objects.get_or_create(
+                    attribute=model_attr,
+                    slug=f"{product.id}_{model_attr.id}",
+                    defaults={
+                        "name": model[:200],
+                        "plain_text": model,
+                    },
+                )
+                AssignedProductAttributeValue.objects.create(
+                    product=product, value=model_value
+                )
+
+                # Create/get size value
+                size_value, _ = AttributeValue.objects.get_or_create(
+                    attribute=size_attr,
+                    slug=f"{product.id}_{size_attr.id}",
+                    defaults={
+                        "name": size[:200],
+                        "plain_text": size,
+                    },
+                )
+                AssignedProductAttributeValue.objects.create(
+                    product=product, value=size_value
+                )
 
             # Add to all channels
             # Handle available_for_purchase - default to True (available now)

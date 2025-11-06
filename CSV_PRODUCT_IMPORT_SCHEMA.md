@@ -15,6 +15,9 @@ These fields **must** be present in every row:
 | `slug` | Unique product identifier used as SKU | `ray-ban-rb5121-47x22` | Must be unique across all products. Will be used as both product slug and variant SKU. Lowercase, alphanumeric with hyphens. |
 | `name` | Product display name | `Ray-Ban RB5121 47x22 Clip-On Sunglasses` | Maximum 250 characters |
 | `price` | Product selling price | `29.99` | Numeric value in USD. No currency symbols. |
+| `brand` | Brand name | `Ray-Ban` | Brand of the eyeglasses frame (e.g. Ray-Ban, Oakley, Prada) |
+| `model` | Model number | `RB5154` | Model number printed on the frame |
+| `size` | Frame size | `49x21` | Frame size (e.g. 49x21, 52x18) |
 
 ## Optional Fields
 
@@ -26,7 +29,6 @@ These fields are optional but recommended:
 | `cost_price` | Cost/wholesale price | `15.50` | `0.00` | Numeric value in USD |
 | `weight` | Product weight | `0.05` | `0.0` | Weight in kg |
 | `stock_quantity` | Initial stock quantity | `100` | `100` | Integer value |
-| `brand` | Brand/manufacturer name | `Ray-Ban` | Empty | Will be stored as a product attribute if provided |
 | `is_published` | Whether product is visible | `true` or `false` | `true` | Boolean value |
 | `available_for_purchase` | Whether product is available for purchase | `true` or `false` | `true` | Boolean value. When true, sets product as available for purchase immediately |
 | `track_inventory` | Enable inventory tracking | `true` or `false` | `false` | Boolean value |
@@ -42,10 +44,10 @@ These fields are optional but recommended:
 ## CSV Example
 
 ```csv
-slug,name,price,description,cost_price,weight,stock_quantity,brand,is_published,available_for_purchase,track_inventory
-ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Premium clip-on sunglasses for Ray-Ban RB5121 frames,15.50,0.05,100,Ray-Ban,true,true,false
-oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Sport clip-on sunglasses for Oakley frames,18.00,0.06,75,Oakley,true,true,false
-generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Affordable clip-on sunglasses for round frames,8.00,0.04,200,Generic,true,true,false
+slug,name,price,brand,model,size,description,cost_price,weight,stock_quantity,is_published,available_for_purchase,track_inventory
+ray-ban-rb5121-47x22,Ray-Ban RB5121 47x22 Clip-On Sunglasses,29.99,Ray-Ban,RB5121,47x22,Premium clip-on sunglasses for Ray-Ban RB5121 frames,15.50,0.05,100,true,true,false
+oakley-ox8156-56x18,Oakley OX8156 56x18 Clip-On Sunglasses,34.99,Oakley,OX8156,56x18,Sport clip-on sunglasses for Oakley frames,18.00,0.06,75,true,true,false
+generic-52x20-round,Generic 52x20 Round Clip-On,19.99,Generic,ROUND-52,52x20,Affordable clip-on sunglasses for round frames,8.00,0.04,200,true,true,false
 ```
 
 ## HTML Descriptions
@@ -77,16 +79,16 @@ When including HTML in CSV files:
 
 **Example with quotes in HTML:**
 ```csv
-slug,name,price,description,brand
-product-1,Product Name,29.99,"<p>Description with ""quoted"" text</p>",BrandName
+slug,name,price,brand,model,size,description
+product-1,Product Name,29.99,BrandName,MODEL123,52x18,"<p>Description with ""quoted"" text</p>"
 ```
 
 ### Plain Text Alternative
 
 If you don't want to use HTML, you can use plain text and it will be automatically formatted:
 ```csv
-slug,name,price,description,brand
-product-2,Simple Product,19.99,This is a simple plain text description.,BrandName
+slug,name,price,brand,model,size,description
+product-2,Simple Product,19.99,BrandName,MODEL456,54x20,This is a simple plain text description.
 ```
 
 ## Important Notes
