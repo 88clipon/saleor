@@ -21,4 +21,5 @@ echo "Starting Saleor application..."
 cd /home/lei/workspace/88clipon/saleor && \
 source .venv/bin/activate && \
 export PYTHONDONTWRITEBYTECODE=1 && \
+export ALLOWED_HOSTS=localhost,127.0.0.1,10.0.0.66,vm && \
 "uvicorn" "saleor.asgi:application" "--host=0.0.0.0" "--port=8000" "--workers=2" "--lifespan=off" "--ws=none" "--no-server-header" "--no-access-log" "--timeout-keep-alive=35" "--timeout-graceful-shutdown=30" "--limit-max-requests=10000"
